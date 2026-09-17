@@ -4,6 +4,7 @@ import { CartProvider } from "@/components/cart-provider";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { getCategories } from "@/lib/products/service";
+import { getCurrentUser } from "@/lib/auth/session";
 
 export const metadata: Metadata = {
   title: { default: "Abhi Fashions | Sarees for every occasion", template: "%s | Abhi Fashions" },
@@ -12,9 +13,10 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const categories = await getCategories();
+  const user = await getCurrentUser();
   return (
     <html lang="en">
-      <body><CartProvider><Header categories={categories} />{children}<Footer /></CartProvider></body>
+      <body><CartProvider><Header categories={categories} user={user} />{children}<Footer /></CartProvider></body>
     </html>
   );
 }
