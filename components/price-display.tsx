@@ -1,0 +1,1 @@
+export function PriceDisplay({ price, compareAtPrice }: { price: number; compareAtPrice?: number }) { const format = (value: number) => `₹${value.toLocaleString("en-IN")}`; return <span className="sans price-display"><strong>{format(price)}</strong>{compareAtPrice ? <del className="muted">{format(compareAtPrice)}</del> : null}</span>; }

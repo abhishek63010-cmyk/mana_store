@@ -1,0 +1,4 @@
+import Link from "next/link";
+import type { ReactNode } from "react";
+type Props = { children: ReactNode; href?: string; type?: "button" | "submit"; onClick?: () => void; disabled?: boolean; variant?: "primary" | "quiet" };
+export function Button({ children, href, type = "button", onClick, disabled, variant = "primary" }: Props) { const className = `sans button ${variant === "primary" ? "button-primary" : "button-quiet"}`; return href ? <Link className={className} href={href}>{children}</Link> : <button className={className} type={type} onClick={onClick} disabled={disabled}>{children}</button>; }

@@ -1,0 +1,3 @@
+export function LoadingState() { return <div className="state" aria-live="polite">Loading the collection...</div>; }
+export function EmptyState({ title, description }: { title: string; description: string }) { return <div className="state"><h2>{title}</h2><p className="muted sans">{description}</p></div>; }
+export function ErrorState() { return <div className="state" role="alert"><h2>We could not load this collection.</h2><p className="muted sans">Please try again in a moment.</p></div>; }
