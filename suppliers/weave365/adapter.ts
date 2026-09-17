@@ -1,27 +1,70 @@
+import "server-only";
+
 import type { SupplierAdapter } from "@/suppliers/adapter";
-import type { SupplierProduct } from "@/types/supplier";
+import { SupplierApiError } from "@/suppliers/errors";
+import type {
+  SupplierOrderRequest,
+  SupplierOrderResponse,
+  SupplierOrderStatus,
+  SupplierProductData,
+  SupplierStockData,
+} from "@/types/supplier";
+
+export interface Weave365Config {
+  apiUrl: string;
+  apiKey: string;
+}
 
 export class Weave365Adapter implements SupplierAdapter {
   readonly code = "weave365" as const;
 
-  constructor(private readonly apiUrl: string, private readonly apiKey: string) {}
+  constructor(private readonly config: Weave365Config) {}
 
-  async listProducts(): Promise<SupplierProduct[]> {
-    throw new Error("Weave365 product synchronization is not implemented yet.");
+  async getProduct(_supplierSku: string): Promise<SupplierProductData | null> {
+    return this.notImplemented("getProduct");
   }
 
-  async getProduct(_externalId: string): Promise<SupplierProduct | null> {
-    throw new Error("Weave365 product lookup is not implemented yet.");
+  async syncProducts(): Promise<readonly SupplierProductData[]> {
+    return this.notImplemented("syncProducts");
+  }
+
+  async syncStock(): Promise<readonly SupplierStockData[]> {
+    return this.notImplemented("syncStock");
+  }
+
+  async checkStock(_supplierSku: string): Promise<SupplierStockData> {
+    return this.notImplemented("checkStock");
+  }
+
+  async createOrder(_request: SupplierOrderRequest): Promise<SupplierOrderResponse> {
+    return this.notImplemented("createOrder");
+  }
+
+  async getOrderStatus(_supplierOrderId: string): Promise<SupplierOrderStatus> {
+    return this.notImplemented("getOrderStatus");
+  }
+
+  async cancelOrder(_supplierOrderId: string): Promise<SupplierOrderStatus> {
+    return this.notImplemented("cancelOrder");
+  }
+
+  private notImplemented(operation: string): never {
+    throw new SupplierApiError(
+      `Weave365 ${operation} is not implemented yet.`,
+      this.code,
+      operation,
+      501,
+    );
   }
 
   protected get requestHeaders(): HeadersInit {
     return {
       Accept: "application/json",
-      Authorization: `Bearer ${this.apiKey}`,
+      Authorization: `Bearer ${this.config.apiKey}`,
     };
   }
 
   protected get endpoint(): string {
-    return this.apiUrl;
+    return this.config.apiUrl;
   }
 }
