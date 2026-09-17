@@ -1,6 +1,7 @@
 import "server-only";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/database/client";
+import { addressFields, createAddressInTransaction, listAddresses } from "@/lib/addresses/service";
 import type { CheckoutInput } from "@/validations/checkout";
 
 export class CheckoutError extends Error {
@@ -9,14 +10,9 @@ export class CheckoutError extends Error {
   }
 }
 
-const addressFields = {
-  id: true, name: true, phone: true, addressLine1: true, addressLine2: true,
-  city: true, state: true, postalCode: true, country: true,
-} as const;
-
 export async function getCheckoutSnapshot(userId: string) {
   const [addresses, cart] = await Promise.all([
-    prisma.address.findMany({ where: { userId }, orderBy: { createdAt: "desc" }, select: addressFields }),
+    listAddresses(userId),
     prisma.cart.findUnique({ where: { userId }, include: { items: { orderBy: { createdAt: "asc" }, include: { product: { include: { images: { orderBy: { position: "asc" }, take: 1 }, category: true, supplierProducts: { where: { availability: "IN_STOCK" }, orderBy: { createdAt: "asc" }, take: 1 } } } } } } }),
   ]);
   return {
@@ -42,7 +38,7 @@ export async function createOrder(userId: string, input: CheckoutInput) {
 
     const address = input.addressId
       ? await tx.address.findFirst({ where: { id: input.addressId, userId }, select: addressFields })
-      : input.address ? await tx.address.create({ data: { ...input.address, addressLine2: input.address.addressLine2 || null, userId }, select: addressFields }) : null;
+      : input.address ? await createAddressInTransaction(tx, userId, { ...input.address, isDefault: false }) : null;
     if (!address) throw new CheckoutError("ADDRESS_NOT_FOUND", "That shipping address is not available.");
 
     const items = cart.items.map((item) => {

@@ -110,6 +110,7 @@ model Address {
   state        String
   postalCode   String
   country      String
+  isDefault    Boolean  @default(false)
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   orders       Order[]
   createdAt    DateTime @default(now())
