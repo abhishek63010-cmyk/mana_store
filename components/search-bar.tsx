@@ -1,0 +1,4 @@
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+export function SearchBar({ initialQuery = "" }: { initialQuery?: string }) { const [query, setQuery] = useState(initialQuery); const router = useRouter(); return <form className="search-form" onSubmit={(event) => { event.preventDefault(); router.push(`/search${query.trim() ? `?q=${encodeURIComponent(query.trim())}` : ""}`); }} role="search"><label className="sr-only" htmlFor="site-search">Search products, brands and more</label><input id="site-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search products, brands and more" /><button className="sans" type="submit" aria-label="Submit search">Search</button></form>; }

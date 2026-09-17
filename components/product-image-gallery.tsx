@@ -1,0 +1,4 @@
+"use client";
+import Image from "next/image";
+import { useState } from "react";
+export function ProductImageGallery({ images, title }: { images: readonly string[]; title: string }) { const [selected, setSelected] = useState(images[0]); return <div className="gallery"><div className="gallery-main"><Image src={selected} alt={title} width={760} height={950} priority /></div><div className="gallery-thumbs">{images.map((image) => <button key={image} type="button" className={selected === image ? "thumb active" : "thumb"} onClick={() => setSelected(image)}><Image src={image} alt="" width={96} height={120} /></button>)}</div></div>; }
