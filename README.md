@@ -33,16 +33,30 @@ Mana Store is a modular monolith for fashion and lifestyle ecommerce. The founda
 
 	On Windows PowerShell, use `Copy-Item .env.example .env`.
 
-3. Set `DATABASE_URL` to a local PostgreSQL database. Keep `WEAVE365_API_KEY` server-side and use a real value only when the integration is implemented.
+3. Open `.env` and set `DATABASE_URL` to the connection string for your local PostgreSQL database. The value must point to a real running database, for example:
 
-4. Generate the Prisma client and apply the current schema:
+	```dotenv
+	DATABASE_URL="postgresql://postgres:YOUR_PASSWORD@localhost:5432/mana_store?schema=public"
+	```
+
+	Replace the username, password, host, port, and database name as needed. Keep database credentials and `WEAVE365_API_KEY` in `.env` only; do not add real secrets to `.env.example` or commit them.
+
+4. Generate the Prisma Client:
 
 	```bash
 	npm run db:generate
-	npm run db:push
 	```
 
-5. Start the development server:
+5. Apply the current schema to a development database with either option:
+
+	```bash
+	npm run db:push       # Sync the schema without creating a migration
+	npm run db:migrate    # Create and apply a development migration
+	```
+
+	The project currently contains only the minimal `Supplier` model. The full ecommerce schema will be designed separately.
+
+6. Start the development server:
 
 	```bash
 	npm run dev
@@ -55,9 +69,14 @@ Mana Store is a modular monolith for fashion and lifestyle ecommerce. The founda
 ```bash
 npm run lint       # Run ESLint
 npm run typecheck  # Run TypeScript without emitting files
+npm run db:generate # Generate Prisma Client
+npm run db:push    # Push the schema to PostgreSQL
+npm run db:migrate # Create/apply a development migration
 npm run db:studio  # Open Prisma Studio
 npm run build      # Create a production build
 ```
+
+Run `npm run db:studio` after configuring `DATABASE_URL` to browse the local database in Prisma Studio.
 
 ## Project structure
 
