@@ -66,8 +66,53 @@ export async function createOrder(userId: string, input: CheckoutInput) {
   }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
 }
 
-export async function getOrderForUser(orderId: string, userId: string) {
-  return prisma.order.findFirst({
+const orderListSelect = {
+  id: true, orderNumber: true, createdAt: true, status: true, totalAmount: true, currency: true,
+  items: {
+    take: 3,
+    orderBy: { createdAt: "asc" as const },
+    select: { productTitle: true, sku: true, quantity: true, totalPrice: true },
+  },
+  _count: { select: { items: true } },
+} as const;
+
+export type OrderListView = {
+  id: string;
+  orderNumber: string;
+  createdAt: Date;
+  status: string;
+  total: number;
+  currency: string;
+  itemCount: number;
+  items: { productTitle: string; sku: string; quantity: number; subtotal: number }[];
+};
+
+export type OrderDetailView = Omit<OrderListView, "items"> & {
+  items: { id: string; productTitle: string; sku: string; quantity: number; unitPrice: number; subtotal: number }[];
+  shippingAddress: { name: string; phone: string; line1: string; line2: string | null; city: string; state: string; postalCode: string; country: string };
+  paymentStatus: string | null;
+  shipments: { carrier: string | null; trackingNumber: string | null; trackingUrl: string | null; status: string; estimatedDelivery: Date | null; shippedAt: Date | null; deliveredAt: Date | null }[];
+};
+
+function toOrderListView(order: Awaited<ReturnType<typeof prisma.order.findMany<{ where: never; select: typeof orderListSelect }>>>[number]): OrderListView {
+  return {
+    id: order.id, orderNumber: order.orderNumber, createdAt: order.createdAt, status: order.status,
+    total: Number(order.totalAmount), currency: order.currency, itemCount: order._count.items,
+    items: order.items.map((item) => ({ productTitle: item.productTitle, sku: item.sku, quantity: item.quantity, subtotal: Number(item.totalPrice) })),
+  };
+}
+
+export async function getOrdersForUser(userId: string): Promise<OrderListView[]> {
+  const orders = await prisma.order.findMany({
+    where: { customerId: userId },
+    orderBy: { createdAt: "desc" },
+    select: orderListSelect,
+  });
+  return orders.map(toOrderListView);
+}
+
+export async function getOrderForUser(orderId: string, userId: string): Promise<OrderDetailView | null> {
+  const order = await prisma.order.findFirst({
     where: { id: orderId, customerId: userId },
     select: {
       id: true, orderNumber: true, createdAt: true, status: true, totalAmount: true, currency: true,
@@ -75,11 +120,20 @@ export async function getOrderForUser(orderId: string, userId: string) {
       shippingCity: true, shippingState: true, shippingPostalCode: true, shippingCountry: true,
       items: {
         orderBy: { createdAt: "asc" },
-        select: {
-          productId: true, productTitle: true, sku: true, quantity: true, unitSellingPrice: true, totalPrice: true,
-          product: { select: { images: { orderBy: { position: "asc" }, take: 1, select: { imageUrl: true } } } },
-        },
+        select: { id: true, productTitle: true, sku: true, quantity: true, unitSellingPrice: true, totalPrice: true },
       },
+      payments: { orderBy: { createdAt: "desc" }, take: 1, select: { status: true } },
+      shipments: { orderBy: { createdAt: "desc" }, select: { carrier: true, trackingNumber: true, trackingUrl: true, status: true, estimatedDelivery: true, shippedAt: true, deliveredAt: true } },
     },
   });
+  if (!order) return null;
+  return {
+    id: order.id, orderNumber: order.orderNumber, createdAt: order.createdAt, status: order.status,
+    total: Number(order.totalAmount), currency: order.currency,
+    itemCount: order.items.reduce((count, item) => count + item.quantity, 0),
+    items: order.items.map((item) => ({ id: item.id, productTitle: item.productTitle, sku: item.sku, quantity: item.quantity, unitPrice: Number(item.unitSellingPrice), subtotal: Number(item.totalPrice) })),
+    shippingAddress: { name: order.shippingName, phone: order.shippingPhone, line1: order.shippingAddressLine1, line2: order.shippingAddressLine2, city: order.shippingCity, state: order.shippingState, postalCode: order.shippingPostalCode, country: order.shippingCountry },
+    paymentStatus: order.payments[0]?.status ?? null,
+    shipments: order.shipments,
+  };
 }
