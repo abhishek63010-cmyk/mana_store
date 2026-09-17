@@ -17,5 +17,5 @@ export function AuthNav({ user }: { user: SafeUser | null }) {
   }
 
   if (!user) return <><Link href="/login">Login</Link><Link href="/register">Register</Link></>;
-  return <><Link href="/account">Account</Link><button className="account-logout" type="button" onClick={logout} disabled={loading}>{loading ? "Logging out..." : "Logout"}</button></>;
+  return <><Link href="/account">Account</Link><Link href="/account/addresses">Addresses</Link><button className="account-logout" type="button" onClick={logout} disabled={loading}>{loading ? "Logging out..." : "Logout"}</button></>;
 }
