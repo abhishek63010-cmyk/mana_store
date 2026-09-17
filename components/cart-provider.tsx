@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useMemo, useRef, useState } from 
 import type { Product } from "@/types/product";
 
 export interface CartItem { product: Product; quantity: number; }
-interface CartContextValue { items: CartItem[]; itemCount: number; totalQuantity: number; subtotal: number; addItem: (product: Product, quantity?: number) => void; removeItem: (productId: string) => void; updateQuantity: (productId: string, quantity: number) => void; }
+interface CartContextValue { items: CartItem[]; itemCount: number; totalQuantity: number; subtotal: number; refresh: () => Promise<void>; addItem: (product: Product, quantity?: number) => void; removeItem: (productId: string) => void; updateQuantity: (productId: string, quantity: number) => void; }
 const CartContext = createContext<CartContextValue | null>(null);
 const STORAGE_KEY = "mana_guest_cart";
 
@@ -39,6 +39,7 @@ export function CartProvider({ children, userId = null }: Readonly<{ children: R
   useEffect(() => { if (!userId && ready.current) localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); }, [items, userId]);
   const value = useMemo(() => ({
     items, itemCount: items.reduce((total, item) => total + item.quantity, 0), totalQuantity: items.reduce((total, item) => item.product.availability === "IN_STOCK" ? total + item.quantity : total, 0), subtotal: items.reduce((total, item) => item.product.availability === "IN_STOCK" ? total + item.product.price * item.quantity : total, 0),
+    refresh: async () => { if (!userId) { setItems([]); return; } const response = await fetch("/api/cart", { cache: "no-store" }); if (response.ok) setItems((await response.json()).items); },
     addItem: (product: Product, quantity = 1) => { if (quantity < 1) return; if (!userId) { setItems((current) => { const found = current.find((item) => item.product.id === product.id); return found ? current.map((item) => item.product.id === product.id ? { ...item, quantity: item.quantity + quantity } : item) : [...current, { product, quantity }]; }); return; } void fetch("/api/cart", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ productId: product.id, quantity }) }).then(async (response) => { if (response.ok) setItems((await response.json()).items); }); },
     removeItem: (productId: string) => { if (!userId) { setItems((current) => current.filter((item) => item.product.id !== productId)); return; } void fetch(`/api/cart/${productId}`, { method: "DELETE" }).then(async (response) => { if (response.ok) setItems((await response.json()).items); }); },
     updateQuantity: (productId: string, quantity: number) => { if (quantity < 1) return; if (!userId) { setItems((current) => current.map((item) => item.product.id === productId ? { ...item, quantity } : item)); return; } void fetch(`/api/cart/${productId}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ quantity }) }).then(async (response) => { if (response.ok) setItems((await response.json()).items); }); },
