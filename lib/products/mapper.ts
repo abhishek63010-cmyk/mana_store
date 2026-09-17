@@ -25,7 +25,7 @@ export function mapProduct(record: ProductRecord): Product {
     categorySlug: record.category.slug,
     price: Number(record.sellingPrice),
     images: record.images.map((image) => image.imageUrl),
-    availability: "IN_STOCK",
+    availability: record.status === "OUT_OF_STOCK" ? "OUT_OF_STOCK" : record.status === "PUBLISHED" ? "IN_STOCK" : "UNAVAILABLE",
     supplierSku: "",
     status: record.status,
     attributes,
