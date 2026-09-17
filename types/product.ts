@@ -1,4 +1,4 @@
 export type ProductAvailability = "IN_STOCK" | "OUT_OF_STOCK" | "UNAVAILABLE";
 export type ProductStatus = "DRAFT" | "PUBLISHED" | "HIDDEN" | "OUT_OF_STOCK" | "DISCONTINUED";
-export interface Product { id: string; title: string; slug: string; description: string; categoryId: string; category: string; price: number; compareAtPrice?: number; images: readonly string[]; availability: ProductAvailability; supplierSku: string; status: ProductStatus; rating?: number; reviewCount?: number; attributes: Readonly<Record<string, string>>; }
+export interface Product { id: string; title: string; slug: string; description: string; categoryId: string; category: string; categorySlug?: string; price: number; compareAtPrice?: number; images: readonly string[]; availability: ProductAvailability; supplierSku: string; status: ProductStatus; rating?: number; reviewCount?: number; attributes: Readonly<Record<string, string>>; }
 export interface Category { id: string; name: string; slug: string; parentId?: string; description: string; image: string; active: boolean; }
