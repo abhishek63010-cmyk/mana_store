@@ -1,0 +1,4 @@
+import { notFound } from "next/navigation";
+import { getAdminCategory } from "@/lib/admin/service";
+import { AdminCategoryForm } from "@/components/admin-category-form";
+export default async function EditCategoryPage({ params }: { params: Promise<{ id: string }> }) { const category = await getAdminCategory((await params).id); if (!category) notFound(); return <><div className="admin-page-heading"><div><p className="admin-kicker">Catalogue structure</p><h1>Edit category</h1><p>{category._count.products} product(s) currently assigned.</p></div></div><AdminCategoryForm category={category} /></>; }
