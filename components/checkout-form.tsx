@@ -34,6 +34,7 @@ export function CheckoutForm({ addresses, items }: { addresses: readonly Address
     const response = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
     const result = await response.json().catch(() => null);
     if (!response.ok) { setError(result?.error ?? "We could not place your order."); setLoading(false); return; }
+    await fetch("/api/payments/create-order", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ orderId: result.order.id }) });
     await refresh();
     router.push(`/orders/${result.order.id}`);
     router.refresh();
