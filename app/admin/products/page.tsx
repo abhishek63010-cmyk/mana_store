@@ -1,0 +1,7 @@
+import Link from "next/link";
+import { getAdminProducts } from "@/lib/admin/service";
+
+export default async function AdminProductsPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
+  const query = await searchParams; const products = await getAdminProducts(query.q);
+  return <><div className="admin-page-heading"><div><p className="admin-kicker">Catalogue</p><h1>Products</h1><p>Review product content, status, price, and availability signals.</p></div><Link className="admin-button" href="/admin/products/new">New product</Link></div><form className="admin-search"><input name="q" defaultValue={query.q} placeholder="Search title or slug" /><button className="admin-button admin-button-quiet" type="submit">Search</button></form><section className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Product</th><th>Status</th><th>Price</th><th>Category</th><th>Orders</th><th>Updated</th></tr></thead><tbody>{products.map((product) => <tr key={product.id}><td><Link href={`/admin/products/${product.id}`}><strong>{product.title}</strong><small>{product.slug}</small></Link></td><td><span className={`admin-status status-${product.status.toLowerCase()}`}>{product.status.replaceAll("_", " ")}</span></td><td>₹{product.sellingPrice.toFixed(2)}</td><td>{product.category.name}</td><td>{product.orderCount}</td><td>{product.updatedAt.toLocaleDateString("en-IN")}</td></tr>)}{products.length === 0 && <tr><td colSpan={6}><div className="admin-empty">No products found. Create a draft to begin.</div></td></tr>}</tbody></table></section></>;
+}

@@ -1,0 +1,3 @@
+import { updateOrderStatus } from "@/lib/admin/actions";
+import { adminOrderTransitions } from "@/lib/admin/service";
+export function AdminOrderStatusForm({ orderId, status }: { orderId: string; status: string }) { const options = adminOrderTransitions[status] ?? []; return options.length === 0 ? <p className="admin-help">No admin transition available from this status.</p> : <form className="admin-inline-form" action={updateOrderStatus}><input type="hidden" name="orderId" value={orderId} /><select name="status" defaultValue=""><option value="" disabled>Change status</option>{options.map((option) => <option value={option} key={option}>{option.replaceAll("_", " ")}</option>)}</select><button className="admin-button" type="submit">Apply</button></form>; }
