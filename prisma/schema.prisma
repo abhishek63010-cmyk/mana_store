@@ -315,6 +315,7 @@ model Payment {
 
   @@unique([provider, providerOrderId])
   @@unique([provider, providerPaymentId])
+  @@unique([orderId, provider])
   @@index([orderId, createdAt])
   @@index([status])
 }
