@@ -1,0 +1,4 @@
+import Link from "next/link";
+import { getAdminCategories } from "@/lib/admin/service";
+import { AdminProductForm } from "@/components/admin-product-form";
+export default async function NewProductPage() { const categories = await getAdminCategories(); return <><div className="admin-page-heading"><div><p className="admin-kicker">Catalogue</p><h1>New product</h1><p>Products are created as drafts unless you explicitly publish them.</p></div><Link className="admin-button admin-button-quiet" href="/admin/products">Back</Link></div>{categories.length === 0 ? <div className="admin-empty">Create a category before creating a product.</div> : <AdminProductForm categories={categories} />}</>; }

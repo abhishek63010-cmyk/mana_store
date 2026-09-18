@@ -1,0 +1,2 @@
+import { AdminCategoryForm } from "@/components/admin-category-form";
+export default function NewCategoryPage() { return <><div className="admin-page-heading"><div><p className="admin-kicker">Catalogue structure</p><h1>New category</h1></div></div><AdminCategoryForm /></>; }
