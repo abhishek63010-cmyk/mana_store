@@ -37,6 +37,6 @@ export function AuthForm({ mode }: { mode: Mode }) {
     <label>Password<input name="password" type="password" autoComplete={isRegister ? "new-password" : "current-password"} minLength={isRegister ? 8 : 1} required /></label>
     {error && <p className="form-error" role="alert">{error}</p>}
     <button className="sans button button-primary" type="submit" disabled={loading}>{loading ? "Please wait..." : isRegister ? "Create account" : "Login"}</button>
-    <p className="auth-switch sans">{isRegister ? "Already have an account?" : "New to Abhi Fashions?"} <Link href={isRegister ? "/login" : "/register"}>{isRegister ? "Login" : "Create an account"}</Link></p>
+    <p className="auth-switch sans">{isRegister ? "Already have an account?" : "New to ManaStore?"} <Link href={isRegister ? "/login" : "/register"}>{isRegister ? "Login" : "Create an account"}</Link></p>
   </form>;
 }

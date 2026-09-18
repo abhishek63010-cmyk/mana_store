@@ -30,7 +30,7 @@ export function RazorpayPaymentButton({ orderId, label = "Pay now" }: { orderId:
     if (!response.ok) { setError(result?.error ?? "We could not start payment."); setLoading(false); return; }
     if (!ready || !window.Razorpay) { setError("Payment checkout is still loading. Please try again."); setLoading(false); return; }
     const checkout = new window.Razorpay({
-      key: result.keyId, amount: result.amount, currency: result.currency, name: "Mana Store", order_id: result.orderId,
+      key: result.keyId, amount: result.amount, currency: result.currency, name: "ManaStore", order_id: result.orderId,
       handler: async (payment: RazorpayResponse) => {
         const verification = await fetch("/api/payments/verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ internalOrderId: result.internalOrderId, razorpayOrderId: payment.razorpay_order_id, razorpayPaymentId: payment.razorpay_payment_id, razorpaySignature: payment.razorpay_signature }) });
         const verificationResult = await verification.json().catch(() => null);

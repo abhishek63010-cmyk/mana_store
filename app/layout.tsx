@@ -8,7 +8,7 @@ import { getCategories } from "@/lib/products/service";
 import { getCurrentUser } from "@/lib/auth/session";
 
 export const metadata: Metadata = {
-  title: { default: "Abhi Fashions | Sarees for every occasion", template: "%s | Abhi Fashions" },
+  title: { default: "ManaStore | Sarees for every occasion", template: "%s | ManaStore" },
   description: "Thoughtfully chosen sarees for mothers, working women, and every woman who dresses in her own way.",
 };
 

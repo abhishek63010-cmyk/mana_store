@@ -1,6 +1,6 @@
-# Mana Store
+# ManaStore
 
-Mana Store is a modular monolith for fashion and lifestyle ecommerce. The foundation keeps the web experience, business services, database access, and supplier integrations separated so additional suppliers can be added without coupling their APIs to the UI.
+ManaStore is a modular monolith for fashion and lifestyle ecommerce. The foundation keeps the web experience, business services, database access, and supplier integrations separated so additional suppliers can be added without coupling their APIs to the UI.
 
 ## Stack
 

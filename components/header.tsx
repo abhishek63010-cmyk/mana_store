@@ -15,7 +15,7 @@ export function Header({ categories, user }: { categories: readonly Category[]; 
   const { count: wishlistCount } = useWishlist();
   return <>
     <header className="site-header"><div className="container header-inner">
-      <Link className="brand" href="/" onClick={() => setOpen(false)}><span className="brand-mark">A</span><span>Abhi <i>Fashions</i></span></Link>
+      <Link className="brand" href="/" onClick={() => setOpen(false)}><span className="brand-mark">M</span><span>ManaStore</span></Link>
       <div className="header-search"><SearchBar /></div>
       <nav className="account-nav sans" aria-label="Customer navigation"><AuthNav user={user} /><Link href="/wishlist">Wishlist <span>{wishlistCount}</span></Link><Link className="cart-link" href="/cart">Cart <span>{itemCount}</span></Link></nav>
       <button className="menu-toggle sans" type="button" aria-expanded={open} aria-controls="mobile-nav" onClick={() => setOpen(!open)}>Menu</button>

@@ -1,7 +1,7 @@
 import { getServerEnv } from "@/lib/env";
 
 export const appConfig = {
-  name: "Mana Store",
+  name: "ManaStore",
   suppliers: {
     weave365: {
       code: "weave365",
