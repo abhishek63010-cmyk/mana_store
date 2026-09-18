@@ -11,7 +11,8 @@
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "db:import:amrah": "node scripts/import-amrah-mv-vis-53.js"
   },
   "dependencies": {
     "@prisma/client": "^6.16.2",
