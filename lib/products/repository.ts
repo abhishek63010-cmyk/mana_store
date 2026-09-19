@@ -14,6 +14,7 @@ export type ProductQuery = {
 const productInclude = {
   category: true,
   images: { orderBy: { position: "asc" as const } },
+  supplierProducts: { where: { availability: "IN_STOCK" as const, supplierStock: { gte: 1 } }, orderBy: { createdAt: "asc" as const }, take: 1 },
 } satisfies Prisma.ProductInclude;
 
 const visibleProductWhere = {

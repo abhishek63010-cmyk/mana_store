@@ -6,11 +6,13 @@ export type ProductRecord = Prisma.ProductGetPayload<{
   include: {
     category: true;
     images: { orderBy: { position: "asc" } };
+    supplierProducts: { where: { availability: "IN_STOCK"; supplierStock: { gte: 1 } }; orderBy: { createdAt: "asc" }; take: 1 };
   };
 }>;
 
 export function mapProduct(record: ProductRecord): Product {
   const attributes: Record<string, string> = {};
+  const availableQuantity = record.supplierProducts[0]?.supplierStock ?? 0;
 
   if (record.fabric) attributes.Fabric = record.fabric;
   if (record.weaveType) attributes.Type = record.weaveType;
@@ -25,7 +27,8 @@ export function mapProduct(record: ProductRecord): Product {
     categorySlug: record.category.slug,
     price: Number(record.sellingPrice),
     images: record.images.map((image) => image.imageUrl),
-    availability: record.status === "OUT_OF_STOCK" ? "OUT_OF_STOCK" : record.status === "PUBLISHED" ? "IN_STOCK" : "UNAVAILABLE",
+    availability: record.status === "OUT_OF_STOCK" ? "OUT_OF_STOCK" : record.status === "PUBLISHED" && availableQuantity > 0 ? "IN_STOCK" : "UNAVAILABLE",
+    availableQuantity,
     supplierSku: "",
     status: record.status,
     attributes,

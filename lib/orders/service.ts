@@ -13,7 +13,7 @@ export class CheckoutError extends Error {
 export async function getCheckoutSnapshot(userId: string) {
   const [addresses, cart] = await Promise.all([
     listAddresses(userId),
-    prisma.cart.findUnique({ where: { userId }, include: { items: { orderBy: { createdAt: "asc" }, include: { product: { include: { images: { orderBy: { position: "asc" }, take: 1 }, category: true, supplierProducts: { where: { availability: "IN_STOCK" }, orderBy: { createdAt: "asc" }, take: 1 } } } } } } }),
+    prisma.cart.findUnique({ where: { userId }, include: { items: { orderBy: { createdAt: "asc" }, include: { product: { include: { images: { orderBy: { position: "asc" }, take: 1 }, category: true, supplierProducts: { where: { availability: "IN_STOCK", supplierStock: { gte: 1 } }, orderBy: { createdAt: "asc" }, take: 1 } } } } } } }),
   ]);
   return {
     addresses,
